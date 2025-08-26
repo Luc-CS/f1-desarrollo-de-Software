@@ -1,0 +1,11 @@
+{
+  "name": "desafio-f1-poo",
+  "version": "1.0.0",
+  "description": "Simulación de Fórmula 1 usando POO en JavaScript",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "author": "",
+  "license": "ISC"
+} 
