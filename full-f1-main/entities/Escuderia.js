@@ -17,6 +17,7 @@ class Escuderia {
             vueltasRapidas: 0,
             abandonos: 0
         };
+        this.montoInvertido = 0;
     }
 
     /**
@@ -38,7 +39,16 @@ class Escuderia {
      * // }
      */
     invertirEnDesarrollo(area, monto) {
-        // Implementar lógica para invertir en desarrollo
+        let retorno = new Map();
+            retorno.set("area", area);
+            retorno.set("montoInvertido", monto);
+            retorno.set("PresupuestoRestante", (this.presupuesto - monto));
+            retorno.set("NivelAnterior", 0);
+            retorno.set("NivelNuevo", (this.monto/100000));
+
+        this.desarrollo[area].nivel = (this.monto/100000);   
+         this.montoInvertido = monto;   
+        return retorno;
     }
 
     /**
@@ -58,9 +68,42 @@ class Escuderia {
      * // }
      */
     calcularMejora(area, monto) {
-        // Implementar lógica para calcular mejora
-    }
+        const puntosObtenidos = Math.floor(monto / 100000);
 
+        let mejoraCalculada = {};
+     switch (area) {
+        case "motor":
+            // Investment in the engine improves speed and efficiency.
+            mejoraCalculada = {
+                mejoraVelocidadMaxima: puntosObtenidos * 0.5, // e.g., 0.5 km/h per point
+                mejoraAceleracion: puntosObtenidos * 0.2 // e.g., 0.2% per point
+            };
+            break;
+        case "aerodinamica":
+            // Investment in aerodynamics improves cornering and reduces fuel usage.
+            mejoraCalculada = {
+                mejoraAgarreEnCurva: puntosObtenidos * 0.4, // e.g., 0.4% per point
+                reduccionConsumoCombustible: puntosObtenidos * 0.3 // e.g., 0.3% per point
+            };
+            break;
+        case "neumaticos":
+            // Investment in tires improves grip and reduces degradation.
+            mejoraCalculada = {
+                mejoraAgarreGeneral: puntosObtenidos * 0.6, // e.g., 0.6% per point
+                reduccionDesgasteNeumaticos: puntosObtenidos * 0.5 // e.g., 0.5% per point
+            };
+            break;
+        case "suspension":
+            // Investment in suspension improves handling and tire life.
+            mejoraCalculada = {
+                mejoraManejoEnBumps: puntosObtenidos * 0.7, // e.g., 0.7% per point
+                mejoraVidaUtilNeumaticos: puntosObtenidos * 0.4 // e.g., 0.4% per point
+            };
+            break;
+        default:
+            throw new Error("Área de desarrollo no válida.");
+     }
+    }
     /**
      * Valida si el desarrollo en un área fue exitoso
      * @param {string} area - Área de desarrollo
@@ -72,11 +115,13 @@ class Escuderia {
      * const esExitoso = escuderia.esDesarrolloExitoso("motor");
      * // Returns: true si el nivel de desarrollo es adecuado y el presupuesto fue bien utilizado
      */
-    esDesarrolloExitoso(area) {
-        // Implementar lógica para validar desarrollo exitoso
-    }
 
-    /**
+     esDesarrolloExitoso(area) {
+         this.desarrollo[area].nivel > 1; 
+     }
+
+
+     /**
      * Obtiene todas las estadísticas de la escudería
      * @returns {Object} Estadísticas completas
      * 
@@ -104,7 +149,13 @@ class Escuderia {
      * // }
      */
     obtenerEstadisticas() {
-        // Implementar lógica para obtener estadísticas
+        let retorno = new Map();
+            retorno.set("total", this.presupuesto);
+            retorno.set("disponible", (this.presupuesto-this.montoInvertido));
+            retorno.set("invertido", this.montoInvertido);
+
+
+        return this.desarrollo, this.estadisticas, retorno;
     }
 
     /**
@@ -129,7 +180,16 @@ class Escuderia {
      * // }
      */
     actualizarEstadisticas(tipo, cantidad) {
-        // Implementar lógica para actualizar estadísticas
+        this.estadisticas[tipo] = cantidad;
+
+        let retorno = new Map();
+            retorno.set("tipo", tipo);
+            retorno.set("cantidadAnt", this.estadisticas[tipo] - cantidad);
+            retorno.set("cantidadNew", cantidad);
+
+
+        return retorno,this.estadisticas;
+
     }
 }
 

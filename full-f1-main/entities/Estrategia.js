@@ -25,9 +25,46 @@ class Estrategia {
      * const esOptima = estrategia.esOptima();
      * // Returns: true si la estrategia es óptima para una carrera de 60 vueltas
      */
+    
     esOptima() {
-        // Implementar lógica para validar estrategia óptima
+    let optima = true;
+
+    const durabilidadNeumaticos = {
+        "chill": { "blandos": 20, "medios": 35, "duros": 45 },
+        "media": { "blandos": 15, "medios": 27, "duros": 37 },
+        "agresivo": { "blandos": 10, "medios": 20, "duros": 30 }
+    };
+
+    if (this.numeroParadas !== this.tiposNeumaticos.length - 1 || this.numeroParadas <= 3) {
+        return false; 
     }
+    
+    let vueltasRecorridas = 0;
+    
+    for (let i = 0; i < this.vueltasParada.length; i++) {
+        const vueltasStint = this.vueltasParada[i];
+        const tipoNeumatico = this.tiposNeumaticos[i];
+        const durabilidadEsperada = durabilidadNeumaticos[this.agresividad][tipoNeumatico];
+
+        if (vueltasStint > durabilidadEsperada) {
+            console.log(`La estrategia no es optima`);
+            return false;
+        }
+        vueltasRecorridas += vueltasStint;
+    }
+
+    // Validar el último stint
+    const vueltasUltimoStint = 60 - vueltasRecorridas;
+    const tipoNeumaticoUltimo = this.tiposNeumaticos[this.tiposNeumaticos.length - 1];
+    const durabilidadUltimoNeumatico = durabilidadNeumaticos[this.agresividad][tipoNeumaticoUltimo];
+
+    if (vueltasUltimoStint > durabilidadUltimoNeumatico) {
+        console.log(`La estrategia no es optima`);
+        return false;
+    }
+    return optima;
+}
+
 
     /**
      * Verifica si las paradas están distribuidas uniformemente
@@ -47,7 +84,33 @@ class Estrategia {
      * // Returns: true si los intervalos entre paradas son similares
      */
     paradasDistribuidasUniformemente() {
-        // Implementar lógica para validar distribución de paradas
+        let optima = true;
+
+        const durabilidadNeumaticos = {
+        "chill": { "blandos": 20, "medios": 35, "duros": 45 },
+        "media": { "blandos": 15, "medios": 27, "duros": 37 },
+        "agresivo": { "blandos": 10, "medios": 20, "duros": 30 }
+        };
+
+        if (this.numeroParadas !== this.tiposNeumaticos.length - 1 || this.numeroParadas != this.vueltasParada.length) {
+        return false; 
+        }
+    
+        let vueltasRecorridas = 0;
+    
+        for (let i = 0; i < this.vueltasParada.length; i++) {
+        const vueltasStint = this.vueltasParada[i];
+        const tipoNeumatico = this.tiposNeumaticos[i];
+        const durabilidadEsperada = durabilidadNeumaticos[this.agresividad][tipoNeumatico];
+
+        if (vueltasStint > durabilidadEsperada) {
+            console.log(`Los intervalos no son similares, hubo un error`);
+            return false;
+        }
+        vueltasRecorridas += vueltasStint;
+        }
+
+        return optima;
     }
 
     /**
@@ -71,6 +134,41 @@ class Estrategia {
         // Implementar lógica para validar agresividad
     }
 
+    agresividadConsistente() {
+        const puntajeNeumaticos = {
+            "blandos": 3,
+            "medios": 2,
+            "duros": 1
+        };
+    
+        const puntajeAgresividad = {
+            "agresivo": 3,
+            "media": 2,
+            "chill": 1
+        };
+
+        // Calcular el puntaje total de los neumáticos en la estrategia
+        let sumaPuntajeNeumaticos = 0;
+        for (const tipo of this.tiposNeumaticos) {
+        sumaPuntajeNeumaticos += puntajeNeumaticos[tipo] || 0;
+        }
+
+        // Calcular el puntaje promedio de los neumáticos
+        const promedioPuntajeNeumaticos = sumaPuntajeNeumaticos / this.tiposNeumaticos.length;
+    
+        // Obtener el puntaje del nivel de agresividad
+        const puntajeEstrategia = puntajeAgresividad[this.agresividad];
+
+        // Definir un rango de tolerancia.
+        // Una estrategia es consistente si el puntaje promedio de los neumáticos
+        // está cerca del puntaje de la agresividad.
+        const tolerancia = 0.5; // El puntaje puede variar 0.5 puntos.
+
+        // Comparamos los valores.
+        const esConsistente = Math.abs(promedioPuntajeNeumaticos - puntajeEstrategia) <= tolerancia;
+
+        return esConsistente;
+    }
     /**
      * Registra una parada en boxes con su tiempo
      * @param {number} tiempo - Tiempo de la parada en segundos
@@ -93,7 +191,17 @@ class Estrategia {
      * // }
      */
     registrarParada(tiempo) {
-        // Implementar lógica para registrar parada
+        this.paradasRealizadas++;
+        this.tiempoTotalPitStops += tiempo;
+        let retorno = new Map();
+            retorno.set("numeroParada", this.paradasRealizadas);
+            retorno.set("tiempo", tiempo);
+            retorno.set("vuelta", this.vueltasParada[this.paradasRealizadas-1]);
+            retorno.set("neumaticos", this.tiposNeumaticos[this.paradasRealizadas]);
+            retorno.set("tiempoTotalPitStops", this.tiempoTotalPitStops);
+
+
+        return retorno,this.estadisticas;
     }
 
     /**
@@ -116,7 +224,18 @@ class Estrategia {
      * // }
      */
     obtenerSiguienteParada() {
-        // Implementar lógica para obtener siguiente parada
+        let paradanum = this.paradasRealizadas +1;
+        let neu = this.tiposNeumaticos[paradanum];
+        let para = this.vueltasParada[paradanum-1]
+        this.tiempoTotalPitStops += tiempo;
+        let retorno = new Map();
+            retorno.set("vuelta", tiempo);
+            retorno.set("neumatico", para);
+            retorno.set("tiempoEstimado", neu);
+            retorno.set("paradaNumero", paradanum);
+
+
+        return retorno,this.estadisticas;
     }
 }
 

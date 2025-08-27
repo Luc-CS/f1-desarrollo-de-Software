@@ -5,7 +5,7 @@ const Carrera = require('./entities/Carrera');
 const Circuito = require('./entities/Circuito');
 const Estrategia = require('./entities/Estrategia');
 
-
+console.log("Luca Gay")
 
 try {
     // Crear circuito con condiciones climáticas

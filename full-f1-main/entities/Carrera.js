@@ -14,7 +14,7 @@ class Carrera {
         };
         this.vueltaRapida = null;
     }
-
+    
     /**
      * Inicia la carrera validando requisitos mínimos y estableciendo condiciones iniciales
      * @returns {Object} Información sobre el inicio de la carrera
@@ -34,7 +34,6 @@ class Carrera {
     cronometraje(){
         let vueltas = 0;
     
-
         while(vueltas < this.numeroVueltas){
             vueltas++;
             console.log("Vuelta completada");
@@ -74,7 +73,7 @@ class Carrera {
     promedioNeumaticosAutitos(){
         return (this.autosParticipantes.reduce((acumulador, auto) => acumulador + auto.factorNeumaticos(),0) / this.autosParticipantes.length);
     }
-    promedioFactorPiloto(){
+    promedioFactorPiloto(){ 
         return (this.autosParticipantes.reduce((acumulador, auto) => acumulador + auto.conductor.factorPiloto(),0) / this.autosParticipantes.length);
     }
 
@@ -155,51 +154,31 @@ class Carrera {
      * // }
      */
     realizarClasificacion() {
+        var resultadosQ1;
+        
+        autosParticipantes.forEach(autoActual => {
+            resultadosQ1 = autosParticipantes.map(auto => {
+                return {
+                    nombre: auto.conductor.nombre,
+                    tiempo: auto.conductor.tiempoVuelta() // se asume que esto devuelve un número
+                };
+            });
+        });
+        let resultadosQ1 = resultadosQ1.sort((a, b) => a.tiempo - b.tiempo);
+        let resultadosQ2 = resultadosQ1.slice(0, 15); // los 15 mejores
 
-     autosParticipantes.forEach(autoActual => {
-         const resultadosQ1 = autosParticipantes.map(auto => {
-         return {
-            nombre: auto.conductor.nombre,
-            tiempo: auto.conductor.tiempoVuelta() // se asume que esto devuelve un número
-         };
-    });
-     });
+        let resultadosQ3 = resultadosQ2.slice(0, 10); // los 5 eliminados
+     
         this.clasificacion = {
             q1: resultadosQ1,
-            q2: [],
-            q3: []
+            q2: resultadosQ2,
+            q3: resultadosQ3
         };
-        
-        return this.clasificacion;
+
+        this.resultados = resultadosQ1;
+        return this.clasificacion, this.resultados;
     }
-
-
-    //realizarClasificacion() {
-    // 1. Obtener tiempos de vuelta de todos los autos
-    //const resultadosQ1 = autosParticipantes.map(auto => {
-    //    return {
-    //        nombre: auto.conductor.nombre,
-    //        tiempo: auto.conductor.tiempoVuelta() // se asume que esto devuelve un número
-    //    };
-    //});
-
-    // 2. Ordenar de menor a mayor tiempo (mejor a peor)
-    //resultadosQ1.sort((a, b) => a.tiempo - b.tiempo);
-
-    // 3. Dividir en clasificados y eliminados
-    //const clasificadosQ1 = resultadosQ1.slice(0, 15); // los 15 mejores
-    //const eliminadosQ1 = resultadosQ1.slice(15); // los 5 eliminados
-
-    // 4. Guardar resultados en la estructura de clasificación
-    //this.clasificacion = {
-    //    q1: resultadosQ1,   // Todos ordenados por tiempo
-    //    q2: [],              // Aquí luego irán los mejores 15
-    //    q3: []               // Luego los mejores 10
-    //};
-
-    //return this.clasificacion;
-    //}
-
+    
     /**
      * Registra el tiempo de una vuelta para un auto específico
      * @param {Object} auto - Auto que completó la vuelta
@@ -217,7 +196,34 @@ class Carrera {
      * // }
      */
     registrarVuelta(auto, tiempo) {
-        // Implementar lógica para registrar una vuelta
+        
+        this.numeroVueltas++;
+
+        autosParticipantes.forEach(autoActual => {
+            resultados = autosParticipantes.map(auto => {
+                return {
+                    nombre: auto.conductor.nombre,
+                    tiempo: auto.conductor.tiempoVuelta() // se asume que esto devuelve un número
+                };
+            });
+        });
+        let esVueltaRapida = false;
+        this.resultados.forEach(piloto =>{
+            if(tiempo > piloto.tiempo){
+                this.circuito.actualizarRecordVuelta(tiempo, auto.conductor.nombre);
+                esVueltaRapida = true;
+            }
+        });
+        
+
+        let retorno = new Map();
+            retorno.set("numeroVuelta: ", this.numeroVueltas);
+            retorno.set("piloto: ", auto.conductor.nombre);
+            retorno.set("tiempo: ",tiempo);
+            retorno.set("esVueltaRapida: ",esVueltaRapida);
+
+            return retorno;
+    
     }
 
     /**
@@ -241,8 +247,30 @@ class Carrera {
      * //   ]
      * // }
      */
+        //El ganador de la carrera recibe 25 puntos, el segundo clasificado 18 puntos, el tercero 15 puntos,                                                     
+
     finalizarCarrera() {
-        // Implementar lógica para finalizar la carrera
+        
+        autosParticipantes.forEach(autoActual => {
+            resultados = autosParticipantes.map(auto => {
+                return {
+                    nombre: auto.conductor.nombre,
+                    tiempo: auto.conductor.tiempoVuelta() // se asume que esto devuelve un número
+                };
+            });
+        });
+        let resultados = resultados.sort((a, b) => a.tiempo - b.tiempo);
+        let podio = resultados.slice(0, 3);
+
+        let puntos = new Map();
+            retorno.set("Primero", 25);
+            retorno.set("Primero", this.piloto.nombre);
+            retorno.set("Segundo", 18);
+            retorno.set("Segundo", this.piloto.nombre);
+            retorno.set("Tercero",15);
+            retorno.set("Tercero", this.piloto.nombre);
+
+        return podio, puntos, this.circuito.recordVuelta;
     }
 
     /**
@@ -264,7 +292,25 @@ class Carrera {
      * // }
      */
     obtenerResultados() {
-        // Implementar lógica para obtener resultados
+        autosParticipantes.forEach(autoActual => {
+            resultados = autosParticipantes.map(auto => {
+                return {
+                    nombre: auto.conductor.nombre,
+                    tiempo: auto.conductor.tiempoVuelta() // se asume que esto devuelve un número
+                };
+            });
+        });
+        let resultados = resultados.sort((a, b) => a.tiempo - b.tiempo);
+
+        let vueltasCompletadas = this.numeroVueltas;
+        let vueltasRestantes = this.calcularNumeroVueltas() - this.numeroVueltas;
+
+        let estado = "proceso";
+        
+        if(vueltasCompletadas == this.calcularNumeroVueltas()){
+            estado = "finalizado";
+        }
+        return resultados,vueltasCompletadas,vueltasRestantes,estado;
     }
 }
 
