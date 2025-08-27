@@ -30,6 +30,18 @@ class Carrera {
      * //   condicionesClimaticas: { clima: "seco", temperatura: 25, humedad: 40 }
      * // }
      */
+
+    cronometraje(){
+        let vueltas = 0;
+    
+
+        while(vueltas < this.numeroVueltas){
+            vueltas++;
+            console.log("Vuelta completada");
+        }
+        console.log("Carrera terminada!")
+    }
+
     iniciarCarrera() {
         if(this.esValida() == true){
             let retorno = new Map();
@@ -38,20 +50,18 @@ class Carrera {
             retorno.set("AutosParticipantes: ",this.autosParticipantes.length);
             retorno.set("CondicionesClimaticas: ",this.condicionesClimaticas );
             return retorno;
+
+            cronometraje();
         }
         else{
             return "No se puede iniciar la carrera";
         }
-        //>10 autos
-        //circuito == true
-        //clima != null
-        //fecha != null
-        // Implementar lógica para iniciar la carrera
     }
+    
+
     tiempoVuelta(){
         return tiempoBase() * this.promedioFactorPiloto() * this.promedioNeumaticosAutitos() * condicionesClimaticas.factorClima() * this.promedioDesgasteAutitos();
     }
-
     tiempoBase(){
         return ((this.circuito.longitudKm / this.promedioVelocidadMaxAutitos())* 3600);
     }
@@ -108,14 +118,26 @@ class Carrera {
     /**
      * Calcula el número de vueltas según la longitud del circuito y duración objetivo
      * @returns {number} Número de vueltas calculado
-     * 
+     * +
      * @example
      * const carrera = new Carrera("GP de Mónaco", circuitoMonaco, "2024-05-26");
      * const vueltas = carrera.calcularNumeroVueltas();
      * // Returns: 78 (para Mónaco)
      */
     calcularNumeroVueltas() {
-        return 40 * this.factorDegracion();
+        let velocidadPromedio = this.promedioVelocidadMaxAutitos() * 0.8;
+        let tiempo_vuelta = this.circuito.longitudKm/velocidadPromedio * 3600;
+        let vueltas_duracion = (90*60) / tiempo_vuelta;
+
+        let factorCircuito = this.circuito.longitudKm / 5;
+        let consumo_vuelta = 2.5 * factorCircuito;
+        let vueltas_Combus = 110 / consumo_vuelta;
+
+        let factor_degra = this.circuito.factorCircuito() //(" Alta degradacion")
+        let vueltas_neumaticos = 40 * this.circuito.factorCircuito();
+
+
+        return Math.min(vueltas_duracion,vueltas_Combus,vueltas_neumaticos);
     }
 
     /**
@@ -133,10 +155,50 @@ class Carrera {
      * // }
      */
     realizarClasificacion() {
-        // Implementar lógica para realizar la clasificación
+
+     autosParticipantes.forEach(autoActual => {
+         const resultadosQ1 = autosParticipantes.map(auto => {
+         return {
+            nombre: auto.conductor.nombre,
+            tiempo: auto.conductor.tiempoVuelta() // se asume que esto devuelve un número
+         };
+    });
+     });
+        this.clasificacion = {
+            q1: resultadosQ1,
+            q2: [],
+            q3: []
+        };
         
         return this.clasificacion;
     }
+
+
+    //realizarClasificacion() {
+    // 1. Obtener tiempos de vuelta de todos los autos
+    //const resultadosQ1 = autosParticipantes.map(auto => {
+    //    return {
+    //        nombre: auto.conductor.nombre,
+    //        tiempo: auto.conductor.tiempoVuelta() // se asume que esto devuelve un número
+    //    };
+    //});
+
+    // 2. Ordenar de menor a mayor tiempo (mejor a peor)
+    //resultadosQ1.sort((a, b) => a.tiempo - b.tiempo);
+
+    // 3. Dividir en clasificados y eliminados
+    //const clasificadosQ1 = resultadosQ1.slice(0, 15); // los 15 mejores
+    //const eliminadosQ1 = resultadosQ1.slice(15); // los 5 eliminados
+
+    // 4. Guardar resultados en la estructura de clasificación
+    //this.clasificacion = {
+    //    q1: resultadosQ1,   // Todos ordenados por tiempo
+    //    q2: [],              // Aquí luego irán los mejores 15
+    //    q3: []               // Luego los mejores 10
+    //};
+
+    //return this.clasificacion;
+    //}
 
     /**
      * Registra el tiempo de una vuelta para un auto específico

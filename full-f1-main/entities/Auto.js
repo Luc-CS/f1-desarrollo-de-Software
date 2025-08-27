@@ -49,6 +49,7 @@ class Auto {
     factorDesgaste(){
         return 1 + (this.desgasteNeumaticos * 0.001);
     }
+
     calcularTiempoVuelta(){
 
     }
